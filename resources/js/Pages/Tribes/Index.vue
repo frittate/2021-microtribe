@@ -1,6 +1,6 @@
 <template>
   <app-layout>
-    <Toolbar page="tribes" />
+    <Toolbar page="tribes" show-main-action />
     <template #currentPageNav>
       <inertia-link :href="route('dashboard')"> Home </inertia-link>
         <span class="px-2">&rarr;</span>

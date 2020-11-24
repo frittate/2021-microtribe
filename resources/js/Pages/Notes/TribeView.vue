@@ -3,9 +3,11 @@
    <template #currentPageNav>
      <inertia-link class="hover:underline" :href="route('dashboard')"> Home </inertia-link>
         <span class="px-2">&rarr;</span>
+      <inertia-link class="hover:underline" :href="route('tribes.all')"> Tribes </inertia-link>
+        <span class="px-2">&rarr;</span>
       <inertia-link class="hover:underline" :href="route('tribes.single', tribe.uuid)"> {{ tribe.name }} </inertia-link>
         <span class="px-2">&rarr;</span>
-        <p class="underline">{{ note.title }}</p>
+      <p class="underline">{{ note.title }}</p>
    </template>
 
    <div>

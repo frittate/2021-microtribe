@@ -44,10 +44,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('tribes', [TribeController::class, 'index'])
     ->name('tribes.all');
 
-    Route::get('tribes/{tribe}', [TribeController::class, 'single'])
+    Route::get('tribes/{tribe}/edit', [TribeController::class, 'single'])
     ->name('tribes.single');
 
-    Route::get('tribes/create', [TribeController::class, 'single'])
+    Route::get('tribes/create', [TribeController::class, 'create'])
     ->name('tribes.create');
 
     Route::get('tribes/{tribe}/inbox', [TribeController::class, 'inbox'])

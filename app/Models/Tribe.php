@@ -11,7 +11,13 @@ class Tribe extends Model
 
     protected $fillable = [
         'name',
-        'description'
+        'description',
+        'photo_path',
+        'votes_for_approve',
+        'votes_for_archive',
+        'votes_for_delete',
+        'has_inbox',
+        'has_archive'
     ];
 
     protected $guarded = [

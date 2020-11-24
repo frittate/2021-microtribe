@@ -70,6 +70,21 @@ class TribeController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        $tribe = new Tribe;
+        $tribe->name = 'new tribe';
+        $tribe->votes_for_approve = 1;
+        $tribe->votes_for_archive = 2;
+        $tribe->votes_for_delete = 2;
+        $tribe->has_inbox = true;
+        $tribe->has_archive = true;
+
+        return Inertia::render('Tribes/Edit', [
+            'tribe' => $tribe
+        ]);
+    }
+
     /* public function note(Tribe $tribe, Note $note) {
         dump($tribe, $note);
     } */

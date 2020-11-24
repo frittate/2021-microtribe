@@ -19,7 +19,7 @@
           <p class="text-tiny text-white">grid view</p>
         </div>
       </div>
-      <button v-if="showMainAction && page === 'noteEditor'" class="ml-auto h-full px-6 py-3 bg-indigo-500 hover:bg-indigo-600 flex items-center justify-center font-bold text-xs text-white" @click="$emit('main-action')">{{ mainActionText }}</button>
+      <button v-if="(showMainAction && page === 'noteEditor') || (showMainAction && page === 'tribes.create') " class="ml-auto h-full px-6 py-3 bg-indigo-500 hover:bg-indigo-600 flex items-center justify-center font-bold text-xs text-white" @click="$emit('main-action')">{{ mainActionText }}</button>
       <inertia-link v-else-if="showMainAction" :href="mainAction" class="ml-auto h-full px-6 py-3 bg-indigo-500 hover:bg-indigo-600 flex items-center justify-center font-bold text-xs text-white">{{ mainActionText }}</inertia-link>
     </div>
   </div>
@@ -46,7 +46,7 @@ export default {
     mainAction() {
       if (this.page === 'notes') {
         return route('notes.create')
-      } else if (This.page === 'tribes') {
+      } else if (this.page === 'tribes') {
         return route('tribes.create')
       }
       return ''
@@ -60,6 +60,8 @@ export default {
           return 'make a new tribe'
           break
         case 'noteEditor':
+          return 'save changes'
+        case 'tribeEditor':
           return 'save changes'
         default:
           break;
