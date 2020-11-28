@@ -5016,6 +5016,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -5026,6 +5029,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   props: {
     tribe: {
       type: Object
+    },
+    user: {
+      type: Object
     }
   },
   data: function data() {
@@ -5033,7 +5039,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       form: {
         name: '',
         description: '',
-        photo_url: '',
+        photo_path: '',
         votes_for_approve: null,
         votes_for_archive: null,
         votes_for_delete: null,
@@ -5057,7 +5063,23 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   },
   methods: {
     save: function save() {
-      console.log('save');
+      var _this = this;
+
+      this.$inertia.post(this.route("tribes.store"), this.form, {
+        onSuccess: function onSuccess() {
+          _this.form = {};
+        }
+      });
+    },
+    snakeCaseThis: function snakeCaseThis(e) {
+      if (!e.target.value) {
+        return;
+      }
+
+      var str = e.target.value.replace(/\W/g, '').match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g).map(function (x) {
+        return x.toLowerCase();
+      }).join('_');
+      this.form.name = str;
     }
   }
 });
@@ -5599,16 +5621,17 @@ __webpack_require__.r(__webpack_exports__);
       switch (this.page) {
         case 'notes':
           return 'add a new entry';
-          break;
 
         case 'tribes':
           return 'make a new tribe';
-          break;
 
         case 'noteEditor':
           return 'save changes';
 
-        case 'tribeEditor':
+        case 'tribes.create':
+          return 'create new tribe';
+
+        case 'tribes.edit':
           return 'save changes';
 
         default:
@@ -58423,7 +58446,7 @@ var render = function() {
     [
       _c("Toolbar", {
         attrs: { page: "tribes.create" },
-        on: { mainAction: _vm.save }
+        on: { "main-action": _vm.save }
       }),
       _vm._v(" "),
       _vm._v(" "),
@@ -58480,32 +58503,17 @@ var render = function() {
                           ),
                           _vm._v(" "),
                           _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.form.name,
-                                expression: "form.name"
-                              }
-                            ],
                             staticClass:
                               "flex-1 form-input block w-full min-w-0 rounded-none rounded-r-md transition duration-150 ease-in-out sm:text-sm sm:leading-5",
                             attrs: { id: "tribeName" },
                             domProps: { value: _vm.form.name },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(_vm.form, "name", $event.target.value)
-                              }
-                            }
+                            on: { blur: _vm.snakeCaseThis }
                           })
                         ]
                       )
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "sm:col-span-6" }, [
+                    _c("div", { staticClass: "sm:col-span-4" }, [
                       _c(
                         "label",
                         {
@@ -58571,14 +58579,14 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.form.photo_url,
-                              expression: "form.photo_url"
+                              value: _vm.form.photo_path,
+                              expression: "form.photo_path"
                             }
                           ],
                           staticClass:
                             "form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5",
                           attrs: { id: "photo_url", type: "url" },
-                          domProps: { value: _vm.form.photo_url },
+                          domProps: { value: _vm.form.photo_path },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
@@ -58586,7 +58594,7 @@ var render = function() {
                               }
                               _vm.$set(
                                 _vm.form,
-                                "photo_url",
+                                "photo_path",
                                 $event.target.value
                               )
                             }
@@ -58798,153 +58806,155 @@ var render = function() {
                     ])
                   ]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "sm:col-span-4" }, [
-                    _c(
-                      "label",
-                      {
-                        staticClass:
-                          "block text-sm font-medium leading-5 text-gray-700",
-                        attrs: { for: "votes_for_approve" }
-                      },
-                      [
-                        _vm._v("\n                Tribe members to "),
-                        _c("strong", [_vm._v("approve")]),
-                        _vm._v(" a new post\n              ")
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-1 rounded-md shadow-sm" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.form.votes_for_approve,
-                            expression: "form.votes_for_approve"
-                          }
-                        ],
-                        staticClass:
-                          "form-input block transition duration-150 ease-in-out sm:text-sm sm:leading-5",
-                        attrs: {
-                          id: "votes_for_approve",
-                          type: "number",
-                          min: "0",
-                          max: "5"
-                        },
-                        domProps: { value: _vm.form.votes_for_approve },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
+                  _c("div", { staticClass: "mt-6" }, [
+                    _c("div", { staticClass: "flex items-center mt-6" }, [
+                      _c("div", { staticClass: "rounded-md shadow-sm mr-2" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.votes_for_approve,
+                              expression: "form.votes_for_approve"
                             }
-                            _vm.$set(
-                              _vm.form,
-                              "votes_for_approve",
-                              $event.target.value
-                            )
-                          }
-                        }
-                      })
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "sm:col-span-4" }, [
-                    _c(
-                      "label",
-                      {
-                        staticClass:
-                          "block text-sm font-medium leading-5 text-gray-700",
-                        attrs: { for: "votes_for_archive" }
-                      },
-                      [
-                        _vm._v("\n                Tribe members to "),
-                        _c("strong", [_vm._v("archive")]),
-                        _vm._v(" a post\n              ")
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-1 rounded-md shadow-sm" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.form.votes_for_archive,
-                            expression: "form.votes_for_archive"
-                          }
-                        ],
-                        staticClass:
-                          "form-input block transition duration-150 ease-in-out sm:text-sm sm:leading-5",
-                        attrs: {
-                          id: "votes_for_archive",
-                          type: "number",
-                          min: "0",
-                          max: "5"
-                        },
-                        domProps: { value: _vm.form.votes_for_archive },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
+                          ],
+                          staticClass:
+                            "form-input block transition duration-150 ease-in-out sm:text-sm sm:leading-5",
+                          attrs: {
+                            id: "votes_for_approve",
+                            type: "number",
+                            min: "0",
+                            max: "5"
+                          },
+                          domProps: { value: _vm.form.votes_for_approve },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.form,
+                                "votes_for_approve",
+                                $event.target.value
+                              )
                             }
-                            _vm.$set(
-                              _vm.form,
-                              "votes_for_archive",
-                              $event.target.value
-                            )
                           }
-                        }
-                      })
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "sm:col-span-4" }, [
-                    _c(
-                      "label",
-                      {
-                        staticClass:
-                          "block text-sm font-medium leading-5 text-gray-700",
-                        attrs: { for: "votes_for_delete" }
-                      },
-                      [
-                        _vm._v("\n                Tribe members to "),
-                        _c("strong", [_vm._v("delete")]),
-                        _vm._v(" a post\n              ")
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-1 rounded-md shadow-sm" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.form.votes_for_delete,
-                            expression: "form.votes_for_delete"
-                          }
-                        ],
-                        staticClass:
-                          "form-input block transition duration-150 ease-in-out sm:text-sm sm:leading-5",
-                        attrs: {
-                          id: "votes_for_delete",
-                          type: "number",
-                          min: "0",
-                          max: "5"
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        {
+                          staticClass:
+                            "block text-sm font-medium leading-5 text-gray-700",
+                          attrs: { for: "votes_for_approve" }
                         },
-                        domProps: { value: _vm.form.votes_for_delete },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
+                        [
+                          _vm._v("\n                  Tribe members to "),
+                          _c("strong", [_vm._v("approve")]),
+                          _vm._v(" a new post\n                ")
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "flex items-center mt-6" }, [
+                      _c("div", { staticClass: "rounded-md shadow-sm mr-2" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.votes_for_archive,
+                              expression: "form.votes_for_archive"
                             }
-                            _vm.$set(
-                              _vm.form,
-                              "votes_for_delete",
-                              $event.target.value
-                            )
+                          ],
+                          staticClass:
+                            "form-input block transition duration-150 ease-in-out sm:text-sm sm:leading-5",
+                          attrs: {
+                            id: "votes_for_archive",
+                            type: "number",
+                            min: "0",
+                            max: "5"
+                          },
+                          domProps: { value: _vm.form.votes_for_archive },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.form,
+                                "votes_for_archive",
+                                $event.target.value
+                              )
+                            }
                           }
-                        }
-                      })
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        {
+                          staticClass:
+                            "block text-sm font-medium leading-5 text-gray-700",
+                          attrs: { for: "votes_for_archive" }
+                        },
+                        [
+                          _vm._v("\n                  Tribe members to "),
+                          _c("strong", [_vm._v("archive")]),
+                          _vm._v(" a post\n                ")
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "flex items-center mt-6" }, [
+                      _c("div", { staticClass: "rounded-md shadow-sm mr-2" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.votes_for_delete,
+                              expression: "form.votes_for_delete"
+                            }
+                          ],
+                          staticClass:
+                            "form-input block transition duration-150 ease-in-out sm:text-sm sm:leading-5",
+                          attrs: {
+                            id: "votes_for_delete",
+                            type: "number",
+                            min: "0",
+                            max: "5"
+                          },
+                          domProps: { value: _vm.form.votes_for_delete },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.form,
+                                "votes_for_delete",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        {
+                          staticClass:
+                            "block text-sm font-medium leading-5 text-gray-700",
+                          attrs: { for: "votes_for_delete" }
+                        },
+                        [
+                          _vm._v("\n                  Tribe members to "),
+                          _c("strong", [_vm._v("delete")]),
+                          _vm._v(" a post\n                ")
+                        ]
+                      )
                     ])
                   ])
                 ])

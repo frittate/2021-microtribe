@@ -55,13 +55,13 @@ export default {
       switch (this.page) {
         case 'notes':
           return 'add a new entry'
-          break;
         case 'tribes':
           return 'make a new tribe'
-          break
         case 'noteEditor':
           return 'save changes'
-        case 'tribeEditor':
+        case 'tribes.create':
+          return 'create new tribe'
+        case 'tribes.edit':
           return 'save changes'
         default:
           break;

@@ -1,6 +1,6 @@
 <template>
   <app-layout>
-    <Toolbar page="tribes.create" @mainAction="save" />
+    <Toolbar page="tribes.create" @main-action="save"/>
 
     <template #currentPageNav>
       <inertia-link class="hover:underline" :href="route('dashboard')"> Home </inertia-link>
@@ -28,11 +28,11 @@
                   <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                     app.microtribes.com/
                   </span>
-                  <input id="tribeName" v-model="form.name" class="flex-1 form-input block w-full min-w-0 rounded-none rounded-r-md transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input id="tribeName" :value="form.name" @blur="snakeCaseThis" class="flex-1 form-input block w-full min-w-0 rounded-none rounded-r-md transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
 
-              <div class="sm:col-span-6">
+              <div class="sm:col-span-4">
                 <label for="about" class="block text-sm font-medium leading-5 text-gray-700">
                   About
                 </label>
@@ -47,7 +47,7 @@
                   Background image
                 </label>
                 <div class="mt-1 rounded-md shadow-sm">
-                  <input id="photo_url" type="url" v-model="form.photo_url" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input id="photo_url" type="url" v-model="form.photo_path" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -92,6 +92,7 @@
                   <p class="text-gray-500">All notes from tribe members will need approval before appearing in the main view.</p>
                 </div>
               </div>
+
               <div class="relative flex items-start mt-6">
                 <div class="flex items-center h-5">
                   <input id="has_archive" v-model="this.form.has_archive" type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" />
@@ -102,30 +103,32 @@
                 </div>
               </div>
 
-              <div class="sm:col-span-4">
-                <label for="votes_for_approve" class="block text-sm font-medium leading-5 text-gray-700">
-                  Tribe members to <strong>approve</strong> a new post
-                </label>
-                <div class="mt-1 rounded-md shadow-sm">
-                  <input id="votes_for_approve" type="number" min="0" max="5" v-model="form.votes_for_approve" class="form-input block transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+              <div class="mt-6">
+                <div class="flex items-center mt-6">
+                  <div class="rounded-md shadow-sm mr-2">
+                    <input id="votes_for_approve" type="number" min="0" max="5" v-model="form.votes_for_approve" class="form-input block transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  </div>
+                  <label for="votes_for_approve" class="block text-sm font-medium leading-5 text-gray-700">
+                    Tribe members to <strong>approve</strong> a new post
+                  </label>
                 </div>
-              </div>
 
-              <div class="sm:col-span-4">
-                <label for="votes_for_archive" class="block text-sm font-medium leading-5 text-gray-700">
-                  Tribe members to <strong>archive</strong> a post
-                </label>
-                <div class="mt-1 rounded-md shadow-sm">
-                  <input id="votes_for_archive" type="number" min="0" max="5" v-model="form.votes_for_archive" class="form-input block transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                <div class="flex items-center mt-6">
+                  <div class="rounded-md shadow-sm mr-2">
+                    <input id="votes_for_archive" type="number" min="0" max="5" v-model="form.votes_for_archive" class="form-input block transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  </div>
+                   <label for="votes_for_archive" class="block text-sm font-medium leading-5 text-gray-700">
+                    Tribe members to <strong>archive</strong> a post
+                  </label>
                 </div>
-              </div>
 
-              <div class="sm:col-span-4">
-                <label for="votes_for_delete" class="block text-sm font-medium leading-5 text-gray-700">
-                  Tribe members to <strong>delete</strong> a post
-                </label>
-                <div class="mt-1 rounded-md shadow-sm">
-                  <input id="votes_for_delete" type="number" min="0" max="5" v-model="form.votes_for_delete" class="form-input block transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                <div class="flex items-center mt-6">
+                  <div class="rounded-md shadow-sm mr-2">
+                    <input id="votes_for_delete" type="number" min="0" max="5" v-model="form.votes_for_delete" class="form-input block transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  </div>
+                  <label for="votes_for_delete" class="block text-sm font-medium leading-5 text-gray-700">
+                    Tribe members to <strong>delete</strong> a post
+                  </label>
                 </div>
               </div>
             </div>
@@ -149,13 +152,16 @@ export default {
     tribe: {
       type: Object
     },
+    user: {
+      type: Object
+    }
   },
   data() {
     return {
       form: {
         name: '',
         description: '',
-        photo_url: '',
+        photo_path: '',
         votes_for_approve: null,
         votes_for_archive: null,
         votes_for_delete: null,
@@ -174,7 +180,20 @@ export default {
   },
   methods: {
     save() {
-      console.log('save');
+      this.$inertia.post(this.route("tribes.store"), this.form, {
+        onSuccess: () => {
+          this.form = {};
+        },
+      });
+    },
+    snakeCaseThis(e) {
+      if (!e.target.value) {
+        return
+      }
+      const str = e.target.value.replace(/\W/g, '').match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+        .map(x => x.toLowerCase())
+        .join('_')
+      this.form.name = str
     }
   },
 }

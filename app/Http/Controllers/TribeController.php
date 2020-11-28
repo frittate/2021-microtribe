@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
 use App\Models\Tribe;
 use App\Models\Note;
-
+use Illuminate\Support\Str;
 
 class TribeController extends Controller
 {
@@ -25,22 +27,28 @@ class TribeController extends Controller
     public function single($id)
     {
         $tribe = Auth::user()->tribes->where('uuid', $id)->first();
-        $notes = $tribe->notes->filter(function ($note) {
-            return $note->pivot->status_id === Note::STATUS['approved'];
-        })->all();
+        $notes = [];
+        $archived_length = 0;
+        $inbox_length = 0;
 
-        foreach ($notes as $note) {
-            $note['user_array'] = $note->user->get(['name']);
+        if (isset($tribe->notes)) {
+            $notes = $tribe->notes->filter(function ($note) {
+                return $note->pivot->status_id === Note::STATUS['approved'];
+            })->all();
+
+            foreach ($notes as $note) {
+                $note['user_array'] = $note->user->get(['name']);
+            }
+
+            $archived_length = $tribe->notes->filter(function ($note) {
+                return $note->pivot->status_id === Note::STATUS['archived'];
+            })->count();
+
+            $inbox_length = $tribe->notes->filter(function ($note) {
+                return $note->pivot->status_id === Note::STATUS['unapproved'] || $note->pivot->status_id === Note::STATUS['flagged'];
+            })->count();
+
         }
-
-        $archived_length = $tribe->notes->filter(function ($note) {
-            return $note->pivot->status_id === Note::STATUS['archived'];
-        })->count();
-
-        $inbox_length = $tribe->notes->filter(function ($note) {
-            return $note->pivot->status_id === Note::STATUS['unapproved'] || $note->pivot->status_id === Note::STATUS['flagged'];
-        })->count();
-
 
         if (isset($tribe->users)) {
             foreach ($tribe->users as $user) {
@@ -70,10 +78,12 @@ class TribeController extends Controller
         ]);
     }
 
-    public function create()
+    public function createTemplate()
     {
+        $user = Auth::user();
+
         $tribe = new Tribe;
-        $tribe->name = 'new tribe';
+        $tribe->name = 'new_tribe';
         $tribe->votes_for_approve = 1;
         $tribe->votes_for_archive = 2;
         $tribe->votes_for_delete = 2;
@@ -81,8 +91,38 @@ class TribeController extends Controller
         $tribe->has_archive = true;
 
         return Inertia::render('Tribes/Edit', [
-            'tribe' => $tribe
+            'tribe' => $tribe,
+            'users' => $user
         ]);
+    }
+
+    public function store()
+    {
+        $uuid = (string) Str::uuid();
+
+        $tribe = new Tribe;
+        $tribe->uuid = substr($uuid, 0, 8);
+        $tribe->name = Request::input('name');
+        $tribe->description = Request::input('description');
+        $tribe->photo_path = Request::input('photo_path');
+        $tribe->votes_for_approve = Request::input('votes_for_approve');
+        $tribe->votes_for_archive = Request::input('votes_for_archive');
+        $tribe->votes_for_delete = Request::input('votes_for_delete');
+        $tribe->has_inbox = Request::input('has_inbox');
+        $tribe->has_archive = Request::input('has_archive');
+        $tribe->save();
+
+        $this->setUserToTribe($tribe);
+
+        return Redirect::route('tribes.single', $tribe->uuid);
+    }
+
+    public function setUserToTribe($tribe)
+    {
+        $user = Auth::user();
+
+        $tribe->users()->attach($tribe->id, ['user_id' => $user->id]);
+        return $tribe->save();
     }
 
     /* public function note(Tribe $tribe, Note $note) {

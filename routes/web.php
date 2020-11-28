@@ -29,7 +29,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('notes', [NotesController::class, 'index'])
     ->name('notes.all');
 
-    Route::get('notes/{note}/edit', [NotesController::class, 'single'])
+    Route::get('notes/{note}/view', [NotesController::class, 'single'])
     ->name('notes.single');
 
     Route::get('notes/create', [NotesController::class, 'create'])
@@ -44,11 +44,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('tribes', [TribeController::class, 'index'])
     ->name('tribes.all');
 
-    Route::get('tribes/{tribe}/edit', [TribeController::class, 'single'])
+    Route::get('tribes/{tribe}/view', [TribeController::class, 'single'])
     ->name('tribes.single');
 
-    Route::get('tribes/create', [TribeController::class, 'create'])
+    Route::get('tribes/create', [TribeController::class, 'createTemplate'])
     ->name('tribes.create');
+
+    Route::post('tribes', [TribeController::class, 'store'])
+    ->name('tribes.store');
 
     Route::get('tribes/{tribe}/inbox', [TribeController::class, 'inbox'])
     ->name('tribes.inbox');
