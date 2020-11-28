@@ -60405,7 +60405,7 @@ var render = function() {
                 ),
                 _vm._v(" "),
                 _c("p", { staticClass: "text-base text-gray-600 mb-5" }, [
-                  _vm._v(_vm._s(_vm.note.excerpt))
+                  _vm._v(_vm._s(_vm.note.parsedContent))
                 ])
               ])
             : _vm.view === "tribe"
@@ -60442,7 +60442,7 @@ var render = function() {
                 ),
                 _vm._v(" "),
                 _c("p", { staticClass: "text-base text-gray-600 mb-5" }, [
-                  _vm._v(_vm._s(_vm.note.excerpt))
+                  _vm._v(_vm._s(_vm.note.parsedContent))
                 ])
               ])
             : _vm._e()
@@ -60454,7 +60454,7 @@ var render = function() {
         {
           staticClass:
             "card bg-white border border-gray-200 rounded-sm p-5 flex flex-col hover:shadow-sm hover:border-blue-200 items-center",
-          attrs: { href: "/tribes/" + _vm.tribe.uuid }
+          attrs: { href: "/tribes/" + _vm.tribe.uuid + "/view" }
         },
         [
           _c("img", {

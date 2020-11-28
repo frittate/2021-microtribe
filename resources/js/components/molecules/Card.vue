@@ -7,7 +7,7 @@
     <div v-if="view === 'notes'">
       <p class="text-xs text-gray-400 mb-1">{{ createdFromNow }}</p>
       <h2 class="text-lg font-medium text-gray-800 mb-2">{{ note.title }}</h2>
-      <p class="text-base text-gray-600 mb-5">{{ note.excerpt }}</p>
+      <p class="text-base text-gray-600 mb-5">{{ note.parsedContent }}</p>
     </div>
 
     <div v-else-if="view === 'tribe'">
@@ -19,12 +19,12 @@
         </div>
       </div>
       <h2 class="text-lg font-medium text-gray-800 mb-2">{{ note.title }}</h2>
-      <p class="text-base text-gray-600 mb-5">{{ note.excerpt }}</p>
+      <p class="text-base text-gray-600 mb-5">{{ note.parsedContent }}</p>
     </div>
   </inertia-link>
   <inertia-link
     v-else-if="type === 'tribe'"
-    :href="`/tribes/${tribe.uuid}`"
+    :href="`/tribes/${tribe.uuid}/view`"
     class="card bg-white border border-gray-200 rounded-sm p-5 flex flex-col hover:shadow-sm hover:border-blue-200 items-center">
     <img :src="tribe.photo_path" alt="" class="rounded-full h-24 w-24 border-gray-200 mb-3">
     <p class="text-lg text-gray-800 mb-2">{{ tribe.name }}</p>

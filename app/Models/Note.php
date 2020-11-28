@@ -57,7 +57,28 @@ class Note extends Model
 
     public function getParsedContentAttribute()
     {
-        return json_decode($this->content);
-        // return Str::words($this->content, 5, '...');
+        $excerpt = [];
+        $content = json_decode($this->content);
+        if(isset($content)) {
+            foreach ($content as $entry) {
+                if(isset($entry->content)) {
+                    $excerpt[] = $entry->content[0]->text;
+                }
+            }
+        }
+        $parsedContent = implode(' ', $excerpt);
+
+       /*  */
+        return Str::words($parsedContent, 12, '...');
     }
 }
+
+/* [
+    {
+        "type": "heading", 
+        "attrs": {"level": 2}, "
+        content": [
+            {"text": "MicroTribes is a new social media platform.", "type": "text"}
+            ]
+        },
+        {"type": "heading", "attrs": {"level": 3}, "content": [{"text": "MicroTribes encourages you to write and share content thoughfully.", "type": "text"}]}, {"type": "paragraph", "content": [{"text": "Here is where I explain why that's cool.", "type": "text"}]}, {"type": "paragraph"}, {"type": "heading", "attrs": {"level": 3}, "content": [{"text": "MicroTribes lives on group interactions: everybody is an admin!", "type": "text"}]}, {"type": "paragraph", "content": [{"text": "How the content in a tribe is displayed is up the users of the tribe.", "type": "text"}]}] */
