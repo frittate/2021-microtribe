@@ -74,7 +74,7 @@ export default {
   },
   computed: {
     loadedContent() {
-      return this.note.parsedContent
+      return JSON.parse(this.note.content)
     }
   },
   mounted() {

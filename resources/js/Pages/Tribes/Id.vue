@@ -1,6 +1,6 @@
 <template>
   <app-layout>
-    <Toolbar page="notes" :show-main-action="false" show-filters />
+    <Toolbar page="notes" :show-main-action="false" show-filters @changeSort="changeSort" />
 
     <template #currentPageNav>
       <inertia-link class="hover:underline" :href="route('dashboard')"> Home </inertia-link>
@@ -48,21 +48,21 @@
       </inertia-link>
     </div>
 
-    <div class="grid grid-cols-4 gap-4">
-      <Card v-for="note in notes" :key="note.id" type="note" :note="note" :tribe="tribe" view="tribe"/>
-    </div>
+    <CardGrid :cards="notes" :sort="sortingAttribute" :tribe="tribe" />
   </app-layout>
 </template>
 
 <script>
 import AppLayout from '@/Layouts/AppLayout'
 import Card from '@/components/molecules/Card'
+import CardGrid from '@/components/organisms/CardGrid'
 import Toolbar from '@/components/functional/Toolbar'
 
 export default {
   components: {
     AppLayout,
     Card,
+    CardGrid,
     Toolbar
   },
   props: {
@@ -80,6 +80,16 @@ export default {
     },
     inbox: {
       type: Number
+    }
+  },
+  data() {
+    return {
+      sortingAttribute: '',
+    }
+  },
+  methods: {
+    changeSort(e) {
+      this.sortingAttribute = e
     }
   }
 }
